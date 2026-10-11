@@ -6,37 +6,31 @@
 <title>Telegram-style чат</title>
 <style>
   * { margin:0; padding:0; box-sizing:border-box;
-      font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,'Helvetica Neue',Arial,sans-serif; }
+      font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif; }
   html,body { height:100%; overflow:hidden; }
-
   body {
-    background:#0e1621;
-    min-height:100vh; display:flex; align-items:center; justify-content:center;
-    padding:16px;
-    color:#fff;
-    -webkit-font-smoothing:antialiased;
+    background:#0e1621; min-height:100vh;
+    display:flex; align-items:center; justify-content:center;
+    padding:16px; color:#fff; -webkit-font-smoothing:antialiased;
   }
-
-  /* ============ ОБЩИЙ КОНТЕЙНЕР ============ */
   .app {
     width:100%; max-width:720px; height:88vh; min-height:560px;
     background:#17212b; border-radius:14px;
     box-shadow:0 20px 60px -10px rgba(0,0,0,.7), 0 0 0 1px rgba(255,255,255,.04);
     display:flex; flex-direction:column; overflow:hidden; position:relative;
-    animation: appIn .4s cubic-bezier(.2,.9,.3,1.1);
+    animation:appIn .4s cubic-bezier(.2,.9,.3,1.1);
   }
   @keyframes appIn { from{opacity:0;transform:translateY(14px) scale(.98);} to{opacity:1;transform:none;} }
 
-  /* ============ АВТОРИЗАЦИЯ ============ */
+  /* ===== АВТОРИЗАЦИЯ ===== */
   #auth {
     position:absolute; inset:0; z-index:10; background:#17212b;
     padding:40px 30px; display:flex; flex-direction:column; justify-content:center;
-    gap:14px; transition:opacity .3s ease, transform .3s ease;
-    overflow-y:auto;
+    gap:14px; transition:opacity .3s ease, transform .3s ease; overflow-y:auto;
   }
   #auth.hide { opacity:0; transform:scale(.96); pointer-events:none; }
   #auth h1 {
-    text-align:center; font-size:1.7rem; margin-bottom:8px;
+    text-align:center; font-size:1.6rem; margin-bottom:6px;
     background:linear-gradient(135deg,#5eb5f7,#0088cc);
     -webkit-background-clip:text; -webkit-text-fill-color:transparent;
     background-clip:text; font-weight:700;
@@ -62,7 +56,7 @@
 
   .field {
     border-radius:12px; overflow:hidden;
-    transition: height .3s ease, opacity .25s ease, margin .3s ease;
+    transition:height .3s ease, opacity .25s ease, margin .3s ease;
     height:52px;
   }
   .field.collapsed { height:0; opacity:0; margin:0; pointer-events:none; }
@@ -70,8 +64,7 @@
   #auth input {
     width:100%; height:52px; padding:0 16px;
     border:1.5px solid #2b5278; border-radius:12px;
-    font-size:.95rem; outline:none; background:#0e1621; color:#fff;
-    transition:.2s;
+    font-size:.95rem; outline:none; background:#0e1621; color:#fff; transition:.2s;
   }
   #auth input::placeholder { color:#5f7285; }
   #auth input:focus { border-color:#5eb5f7; box-shadow:0 0 0 3px rgba(94,181,247,.15); }
@@ -79,8 +72,8 @@
   #authBtn {
     margin-top:6px; padding:14px; border:none; border-radius:12px;
     background:linear-gradient(135deg,#5eb5f7,#0088cc); color:#fff;
-    font-weight:600; font-size:1rem; cursor:pointer;
-    transition:.2s; box-shadow:0 8px 20px -6px rgba(0,136,204,.5);
+    font-weight:600; font-size:1rem; cursor:pointer; transition:.2s;
+    box-shadow:0 8px 20px -6px rgba(0,136,204,.5);
   }
   #authBtn:hover { filter:brightness(1.1); }
   #authBtn:active { transform:scale(.98); }
@@ -88,19 +81,18 @@
   #err { color:#ef5b5b; text-align:center; font-size:.85rem; min-height:18px; }
   .note { font-size:.72rem; color:#5f7285; text-align:center; margin-top:4px; }
 
-  /* ============ ЧАТ ============ */
+  /* ===== ЧАТ ===== */
   #chat { display:none; flex-direction:column; flex:1; overflow:hidden; }
   #chat.show { display:flex; animation:fade .35s ease; }
   @keyframes fade { from{opacity:0;} to{opacity:1;} }
 
-  /* --- Шапка --- */
   .head {
     padding:10px 16px; background:#17212b;
     border-bottom:1px solid rgba(255,255,255,.04);
     display:flex; align-items:center; justify-content:space-between; gap:10px;
     min-height:60px;
   }
-  .who { display:flex; align-items:center; gap:12px; min-width:0; cursor:default; }
+  .who { display:flex; align-items:center; gap:12px; min-width:0; }
   .ava {
     width:42px; height:42px; border-radius:50%;
     background:linear-gradient(135deg,#5eb5f7,#0088cc);
@@ -110,31 +102,23 @@
     transition:transform .25s;
   }
   .ava:hover { transform:scale(1.06); }
-  .who .n {
-    font-weight:600; color:#fff; font-size:1rem;
-    white-space:nowrap; overflow:hidden; text-overflow:ellipsis;
-  }
-  .who .id {
-    font-size:.72rem; color:#7d8e9e;
-    font-family:ui-monospace,'SF Mono',monospace;
-    margin-top:1px;
-  }
+  .who .n { font-weight:600; color:#fff; font-size:1rem;
+            white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+  .who .id { font-size:.72rem; color:#7d8e9e;
+             font-family:ui-monospace,'SF Mono',monospace; margin-top:1px; }
   .who .id b { color:#5eb5f7; font-weight:700; }
 
   .acts { display:flex; gap:2px; }
   .ico {
     width:40px; height:40px; border:none; background:transparent; border-radius:50%;
     cursor:pointer; font-size:1.15rem; color:#7d8e9e;
-    display:flex; align-items:center; justify-content:center;
-    transition:.2s;
+    display:flex; align-items:center; justify-content:center; transition:.2s;
   }
   .ico:hover { background:rgba(94,181,247,.12); color:#5eb5f7; }
   .ico:active { transform:scale(.9); }
   .ico.del:hover { background:rgba(239,91,91,.12); color:#ef5b5b; }
   .ico.on { background:#2b5278; color:#fff; }
-  .ico.invite:hover { background:rgba(94,181,247,.12); }
 
-  /* --- Поиск --- */
   #searchBar {
     max-height:0; overflow:hidden; padding:0 16px; background:#17212b;
     transition:max-height .35s cubic-bezier(.4,.9,.3,1.1), padding .35s;
@@ -148,7 +132,6 @@
   #searchInput:focus { border-color:#5eb5f7; }
   #searchInfo { font-size:.72rem; color:#7d8e9e; text-align:center; min-height:14px; margin-top:5px; }
 
-  /* --- Лента сообщений (фон как в ТГ) --- */
   #msgs {
     flex:1; overflow-y:auto; padding:16px 14px;
     display:flex; flex-direction:column; gap:6px; scroll-behavior:smooth;
@@ -160,100 +143,74 @@
   #msgs::-webkit-scrollbar { width:5px; }
   #msgs::-webkit-scrollbar-thumb { background:#2b5278; border-radius:20px; }
 
-  /* --- Сообщение в стиле Telegram --- */
   .msg {
     max-width:78%; display:flex; flex-direction:column;
-    animation:min .3s cubic-bezier(.2,.9,.3,1.15);
-    position:relative;
+    animation:min .3s cubic-bezier(.2,.9,.3,1.15); position:relative;
   }
-  @keyframes min {
-    from { opacity:0; transform:translateY(10px) scale(.97); }
-    to   { opacity:1; transform:none; }
-  }
+  @keyframes min { from{opacity:0;transform:translateY(10px) scale(.97);} to{opacity:1;transform:none;} }
   .msg.out { align-self:flex-end; }
   .msg.in  { align-self:flex-start; }
 
   .bub {
-    padding:8px 12px 6px;
-    border-radius:14px;
-    font-size:.94rem;
-    line-height:1.35;
-    word-break:break-word;
-    position:relative;
-    transition:box-shadow .25s;
-    box-shadow:0 1px 2px rgba(0,0,0,.25);
+    padding:8px 12px 6px; border-radius:14px; font-size:.94rem; line-height:1.35;
+    word-break:break-word; position:relative;
+    transition:box-shadow .25s; box-shadow:0 1px 2px rgba(0,0,0,.25);
   }
-  .msg.in .bub {
-    background:#182533;
-    color:#e6edf3;
-    border-bottom-left-radius:4px;
-  }
-  .msg.out .bub {
-    background:#2b5278;
-    color:#fff;
-    border-bottom-right-radius:4px;
-  }
-  /* Хвостик облачка */
+  .msg.in .bub { background:#182533; color:#e6edf3; border-bottom-left-radius:4px; }
+  .msg.out .bub { background:#2b5278; color:#fff; border-bottom-right-radius:4px; }
   .msg.in .bub::after {
-    content:''; position:absolute;
-    left:-6px; bottom:0;
-    width:12px; height:14px;
-    background:#182533;
+    content:''; position:absolute; left:-6px; bottom:0;
+    width:12px; height:14px; background:#182533;
     clip-path:polygon(100% 0, 100% 100%, 0 100%);
-    border-bottom-left-radius:2px;
   }
   .msg.out .bub::after {
-    content:''; position:absolute;
-    right:-6px; bottom:0;
-    width:12px; height:14px;
-    background:#2b5278;
+    content:''; position:absolute; right:-6px; bottom:0;
+    width:12px; height:14px; background:#2b5278;
     clip-path:polygon(0 0, 0 100%, 100% 100%);
-    border-bottom-right-radius:2px;
   }
-  /* Последнее сообщение без хвостика если следующее от того же автора */
   .msg.same-author + .msg.same-author .bub::after { display:none; }
 
   .msg .author-name {
-    font-size:.78rem;
-    font-weight:600;
-    color:#5eb5f7;
-    margin-bottom:2px;
-    padding:0 4px;
+    font-size:.78rem; font-weight:600; color:#5eb5f7;
+    margin-bottom:2px; padding:0 4px;
+  }
+  .msg .author-name .badge {
+    background:rgba(94,181,247,.15); color:#5eb5f7;
+    padding:1px 6px; border-radius:5px; font-size:.68rem;
+    font-family:ui-monospace,monospace; margin-left:4px;
   }
 
   .meta {
     display:inline-flex; align-items:center; gap:5px;
     font-size:.7rem; color:rgba(230,237,243,.55);
-    margin-left:8px; float:right;
-    position:relative; top:3px;
-    user-select:none;
+    margin-left:8px; float:right; position:relative; top:3px; user-select:none;
   }
   .msg.out .meta { color:rgba(255,255,255,.65); }
   .meta .checks { font-size:.75rem; color:#5eb5f7; letter-spacing:-2px; }
 
-  .msg.hl .bub {
-    box-shadow:0 0 0 2px #fbbf24, 0 2px 8px rgba(251,191,36,.3);
-  }
+  .msg.hl .bub { box-shadow:0 0 0 2px #fbbf24, 0 2px 8px rgba(251,191,36,.3); }
   mark { background:rgba(251,191,36,.35); color:#ffd76e; border-radius:3px; padding:0 2px; }
 
-  /* --- Пустое состояние --- */
-  .empty {
-    text-align:center; color:#5f7285; font-size:.85rem;
-    padding:40px 20px; line-height:1.6;
+  .msg.system { align-self:center; max-width:90%; }
+  .msg.system .bub {
+    background:rgba(94,181,247,.1); color:#7d8e9e;
+    font-size:.78rem; text-align:center;
+    border-radius:14px; padding:6px 14px;
   }
+  .msg.system .bub::after { display:none; }
+
+  .empty { text-align:center; color:#5f7285; font-size:.85rem; padding:40px 20px; line-height:1.6; }
   .empty .big { font-size:2.4rem; display:block; margin-bottom:10px; opacity:.6; }
 
-  /* --- Поле ввода --- */
   .foot {
     padding:8px 12px; background:#17212b;
     border-top:1px solid rgba(255,255,255,.04);
-    display:flex; gap:8px; align-items:flex-end;
+    display:flex; gap:8px; align-items:center;
   }
   #msgInput {
     flex:1; padding:12px 18px; border:none; border-radius:22px;
     font-size:.94rem; outline:none; background:#0e1621; color:#fff;
-    transition:.2s; resize:none; min-height:44px; max-height:120px;
-    font-family:inherit;
+    transition:.2s; min-height:44px; font-family:inherit;
   }
   #msgInput::placeholder { color:#5f7285; }
   #msgInput:focus { box-shadow:0 0 0 2px rgba(94,181,247,.3); }
@@ -262,55 +219,44 @@
     width:46px; height:46px; border:none; border-radius:50%;
     background:linear-gradient(135deg,#5eb5f7,#0088cc);
     color:#fff; font-size:1.1rem; cursor:pointer; flex-shrink:0;
-    display:flex; align-items:center; justify-content:center;
-    transition:.2s; box-shadow:0 4px 14px -4px rgba(0,136,204,.6);
+    display:flex; align-items:center; justify-content:center; transition:.2s;
+    box-shadow:0 4px 14px -4px rgba(0,136,204,.6);
   }
   #sendBtn:hover { filter:brightness(1.1); transform:scale(1.05); }
   #sendBtn:active { transform:scale(.92); }
 
-  /* ============ МОДАЛКА «ПРИГЛАСИТЬ» ============ */
+  /* ===== МОДАЛКА ===== */
   .modal-bg {
-    position:absolute; inset:0; z-index:20;
-    background:rgba(8,14,20,.75);
+    position:absolute; inset:0; z-index:20; background:rgba(8,14,20,.75);
     backdrop-filter:blur(6px);
-    display:flex; align-items:center; justify-content:center;
-    padding:20px;
-    opacity:0; pointer-events:none;
-    transition:opacity .25s ease;
+    display:flex; align-items:center; justify-content:center; padding:20px;
+    opacity:0; pointer-events:none; transition:opacity .25s ease;
   }
   .modal-bg.open { opacity:1; pointer-events:auto; }
-
   .modal {
-    background:#17212b;
-    border-radius:16px; padding:26px 24px;
-    width:100%; max-width:420px;
+    background:#17212b; border-radius:16px; padding:26px 24px;
+    width:100%; max-width:460px;
     box-shadow:0 20px 60px rgba(0,0,0,.6), 0 0 0 1px rgba(255,255,255,.05);
     transform:scale(.94) translateY(10px);
     transition:transform .3s cubic-bezier(.2,.9,.3,1.15);
   }
   .modal-bg.open .modal { transform:scale(1) translateY(0); }
+  .modal h2 { font-size:1.15rem; color:#fff; margin-bottom:6px;
+              display:flex; align-items:center; gap:8px; }
+  .modal p { font-size:.82rem; color:#7d8e9e; margin-bottom:16px; line-height:1.5; }
 
-  .modal h2 {
-    font-size:1.15rem; color:#fff; margin-bottom:6px;
-    display:flex; align-items:center; gap:8px;
-  }
-  .modal p { font-size:.82rem; color:#7d8e9e; margin-bottom:18px; line-height:1.5; }
-
-  .link-box {
-    display:flex; gap:8px; align-items:stretch; margin-bottom:14px;
-  }
+  .link-box { display:flex; gap:8px; margin-bottom:14px; }
   .link-box input {
     flex:1; padding:12px 14px; border:1.5px solid #2b5278; border-radius:10px;
-    background:#0e1621; color:#5eb5f7; font-size:.82rem;
+    background:#0e1621; color:#5eb5f7; font-size:.75rem;
     font-family:ui-monospace,'SF Mono',monospace; outline:none;
-    overflow:hidden; text-overflow:ellipsis;
+    overflow:hidden; text-overflow:ellipsis; min-width:0;
   }
   .link-box input:focus { border-color:#5eb5f7; }
   .copy-btn {
     padding:0 16px; border:none; border-radius:10px;
     background:#2b5278; color:#fff; font-weight:600;
-    cursor:pointer; font-size:.85rem; transition:.2s;
-    white-space:nowrap;
+    cursor:pointer; font-size:.85rem; transition:.2s; white-space:nowrap;
   }
   .copy-btn:hover { background:#3a6a99; }
   .copy-btn.copied { background:#4caf50; }
@@ -323,15 +269,15 @@
   }
   .btn-ghost:hover { background:rgba(255,255,255,.05); color:#fff; }
 
-  /* ============ ТОСТ ============ */
   .toast {
-    position:absolute; bottom:80px; left:50%; transform:translateX(-50%) translateY(20px);
+    position:absolute; bottom:80px; left:50%;
+    transform:translateX(-50%) translateY(20px);
     background:#2b5278; color:#fff; padding:10px 20px; border-radius:20px;
     font-size:.85rem; font-weight:500;
     box-shadow:0 8px 24px rgba(0,0,0,.4);
     opacity:0; pointer-events:none;
     transition:opacity .3s ease, transform .3s cubic-bezier(.2,.9,.3,1.15);
-    z-index:30;
+    z-index:30; max-width:80%; text-align:center;
   }
   .toast.show { opacity:1; transform:translateX(-50%) translateY(0); }
 </style>
@@ -340,10 +286,9 @@
 
 <div class="app">
 
-  <!-- ==== АВТОРИЗАЦИЯ ==== -->
   <div id="auth">
-    <h1>Telegram-style Чат</h1>
-    <div class="sub">Регистрация · поиск · приглашения</div>
+    <h1 id="authTitle">Telegram-style Чат</h1>
+    <div class="sub" id="authSub">Регистрация · поиск · приглашения</div>
 
     <div class="tabs" id="tabs" data-mode="login">
       <div class="ind"></div>
@@ -359,10 +304,9 @@
 
     <button id="authBtn">Войти</button>
     <div id="err"></div>
-    <div class="note">Каждому аккаунту выдаётся уникальный ID</div>
+    <div class="note" id="authNote">Каждому аккаунту выдаётся уникальный ID</div>
   </div>
 
-  <!-- ==== ЧАТ ==== -->
   <div id="chat">
     <div class="head">
       <div class="who">
@@ -373,7 +317,7 @@
         </div>
       </div>
       <div class="acts">
-        <button class="ico invite" id="inviteBtn" title="Пригласить по ссылке">👥</button>
+        <button class="ico" id="inviteBtn" title="Пригласить">👥</button>
         <button class="ico" id="searchBtn" title="Поиск">🔍</button>
         <button class="ico del" id="clearBtn" title="Очистить">🗑️</button>
         <button class="ico del" id="exitBtn" title="Выйти">⎋</button>
@@ -393,11 +337,10 @@
     </div>
   </div>
 
-  <!-- ==== МОДАЛКА «ПРИГЛАСИТЬ» ==== -->
   <div class="modal-bg" id="inviteModal">
     <div class="modal">
       <h2>🔗 Пригласить в чат</h2>
-      <p>Отправьте эту ссылку другу. Он откроет её, зарегистрируется — и автоматически присоединится к чату, увидев все сообщения и ваш ID.</p>
+      <p id="inviteDesc">Отправьте эту ссылку другу. Он откроет её — и чат со всеми сообщениями появится у него автоматически.</p>
 
       <div class="link-box">
         <input id="inviteLink" readonly>
@@ -410,7 +353,6 @@
     </div>
   </div>
 
-  <!-- ==== ТОСТ ==== -->
   <div class="toast" id="toast"></div>
 </div>
 
@@ -437,7 +379,6 @@
   }
   function escRe(s){ return s.replace(/[.*+?^${}()|[\]\\]/g,'\\$&'); }
 
-  // ===== СЛУЧАЙНЫЙ ID =====
   function generateId(){
     var users=getUsers(); var used={};
     for(var k in users){ if(users[k].id) used[users[k].id]=true; }
@@ -451,14 +392,34 @@
     return String(id).replace(/\B(?=(\d{3})+(?!\d))/g,' ');
   }
 
-  // ===== ТОСТ =====
   var toastTimer;
   function showToast(text){
     var t=$('toast');
     t.textContent=text;
     t.classList.add('show');
     clearTimeout(toastTimer);
-    toastTimer=setTimeout(function(){ t.classList.remove('show'); }, 2200);
+    toastTimer=setTimeout(function(){ t.classList.remove('show'); }, 2600);
+  }
+
+  // ===== КОДИРОВАНИЕ/ДЕКОДИРОВАНИЕ ПРИГЛАШЕНИЯ =====
+  // В ссылке передаём JSON с логином, паролем, id и сообщениями
+  function encodeInvite(data){
+    try{
+      var json = JSON.stringify(data);
+      // UTF-8 → base64 безопасный для URL
+      var utf8 = unescape(encodeURIComponent(json));
+      var b64 = btoa(utf8);
+      return b64.replace(/\+/g,'-').replace(/\//g,'_').replace(/=+$/,'');
+    }catch(e){ return ''; }
+  }
+  function decodeInvite(str){
+    try{
+      var b64 = str.replace(/-/g,'+').replace(/_/g,'/');
+      while(b64.length % 4) b64 += '=';
+      var utf8 = atob(b64);
+      var json = decodeURIComponent(escape(utf8));
+      return JSON.parse(json);
+    }catch(e){ return null; }
   }
 
   // ===== АВТОРИЗАЦИЯ =====
@@ -467,6 +428,7 @@
   var inLogin=$('inLogin'), inPass=$('inPass'), inPass2=$('inPass2');
   var confirmField=$('confirmField');
   var authBtn=$('authBtn'), err=$('err');
+  var authTitle=$('authTitle'), authSub=$('authSub'), authNote=$('authNote');
 
   tabs.querySelectorAll('button').forEach(function(b){
     b.onclick=function(){
@@ -569,53 +531,59 @@
     var div=document.createElement('div');
     div.className='msg '+(own?'out':'in');
 
-    // Если предыдущее сообщение от того же автора — склеиваем (без хвостика)
-    if(!own && prevAuthor===m.author) div.classList.add('same-author');
+    if(m.system){ div.className='msg system'; }
+
+    if(!own && !m.system && prevAuthor===m.author) div.classList.add('same-author');
 
     var idStr=m.authorId?formatId(m.authorId):'';
     var textLow=(m.text||'').toLowerCase();
     var authorLow=(m.author||'').toLowerCase();
     var idLow=String(m.authorId||'').toLowerCase();
 
-    if(q){
+    if(q && !m.system){
       var hit=textLow.indexOf(q)>-1 || authorLow.indexOf(q)>-1 ||
               idLow.indexOf(q.replace(/\s/g,''))>-1 ||
               idStr.toLowerCase().indexOf(q)>-1;
       if(hit) div.classList.add('hl');
     }
 
-    // Имя автора над сообщением (только для входящих)
-    if(!own){
+    if(!own && !m.system){
       var name=document.createElement('div');
       name.className='author-name';
       name.textContent = m.author || 'Гость';
-      if(idStr) name.textContent += ' · #'+idStr;
+      if(idStr){
+        var badge=document.createElement('span');
+        badge.className='badge';
+        badge.textContent='#'+idStr;
+        name.appendChild(badge);
+      }
       div.appendChild(name);
     }
 
     var bub=document.createElement('div');
     bub.className='bub';
 
-    if(q && textLow.indexOf(q)>-1){
+    if(q && !m.system && textLow.indexOf(q)>-1){
       var re=new RegExp('('+escRe(q)+')','gi');
       bub.innerHTML=esc(m.text).replace(re,'<mark>$1</mark>');
     } else {
       bub.textContent=m.text;
     }
 
-    // Время + галочки внутри облачка (как в ТГ)
-    var meta=document.createElement('span');
-    meta.className='meta';
-    var tm=document.createElement('span');
-    tm.textContent=m.time;
-    meta.appendChild(tm);
-    if(own){
-      var checks=document.createElement('span');
-      checks.className='checks';
-      checks.textContent='✓✓';
-      meta.appendChild(checks);
+    if(!m.system){
+      var meta=document.createElement('span');
+      meta.className='meta';
+      var tm=document.createElement('span');
+      tm.textContent=m.time;
+      meta.appendChild(tm);
+      if(own){
+        var checks=document.createElement('span');
+        checks.className='checks';
+        checks.textContent='✓✓';
+        meta.appendChild(checks);
+      }
+      bub.appendChild(meta);
     }
-    bub.appendChild(meta);
 
     div.appendChild(bub);
     return div;
@@ -715,131 +683,185 @@
 
   // ===== ПОИСК =====
   var searchBtn=$('searchBtn'), searchBar=$('searchBar'), searchInput=$('searchInput');
-
   searchBtn.onclick=function(){
     var open=searchBar.classList.toggle('open');
     searchBtn.classList.toggle('on', open);
     if(open) setTimeout(function(){ searchInput.focus(); },200);
     else { searchInput.value=''; render(''); }
   };
-
   var tmr;
   searchInput.addEventListener('input',function(){
     clearTimeout(tmr);
     tmr=setTimeout(function(){ render(searchInput.value); },120);
   });
 
-  // ===== ПРИГЛАШЕНИЕ =====
+  // ===== ПРИГЛАШЕНИЕ (генерация ссылки) =====
   var inviteModal=$('inviteModal'), inviteLink=$('inviteLink'), copyBtn=$('copyBtn');
 
   $('inviteBtn').onclick=function(){
     if(!currentUser) return;
-    var base=location.origin + location.pathname;
-    // Убираем возможные ?join из текущего URL
-    base=base.split('?')[0];
-    var link=base + '?join=' + currentUser.id;
-    inviteLink.value=link;
+
+    // Собираем всё, что нужно другу:
+    // 1) аккаунт приглашающего (логин, пароль, id)
+    // 2) все сообщения чата
+    var payload = {
+      inviter: {
+        login: currentUser.login,
+        password: currentUser.password,
+        id: currentUser.id
+      },
+      messages: getMsgs(),
+      invitedAt: Date.now()
+    };
+
+    var code = encodeInvite(payload);
+    if(!code){
+      showToast('Не удалось создать ссылку');
+      return;
+    }
+
+    var base = location.origin + location.pathname;
+    base = base.split('?')[0].split('#')[0];
+
+    // Если origin = 'null' (file://), используем просто путь
+    if(location.protocol === 'file:'){
+      var link = base + '?invite=' + code;
+      inviteLink.value = link;
+      $('inviteDesc').innerHTML =
+        '⚠️ Файл открыт локально. Ссылка будет работать только на этом компьютере. ' +
+        'Для работы между устройствами нужен хостинг (GitHub Pages, Netlify и т.п.).';
+    } else {
+      inviteLink.value = base + '?invite=' + code;
+      $('inviteDesc').textContent =
+        'Отправьте эту ссылку другу. Он откроет её — и чат со всеми сообщениями появится у него автоматически.';
+    }
+
     inviteModal.classList.add('open');
     setTimeout(function(){ inviteLink.select(); }, 250);
   };
 
-  $('closeModal').onclick=function(){
-    inviteModal.classList.remove('open');
-  };
+  $('closeModal').onclick=function(){ inviteModal.classList.remove('open'); };
   inviteModal.onclick=function(e){
     if(e.target===inviteModal) inviteModal.classList.remove('open');
   };
 
   copyBtn.onclick=function(){
     var link=inviteLink.value;
-    // Современный API
-    if(navigator.clipboard && navigator.clipboard.writeText){
-      navigator.clipboard.writeText(link).then(function(){
-        copyBtn.classList.add('copied');
-        copyBtn.textContent='Скопировано';
-        showToast('Ссылка скопирована');
-        setTimeout(function(){
-          copyBtn.classList.remove('copied');
-          copyBtn.textContent='Копировать';
-        }, 1800);
-      }).catch(function(){ fallbackCopy(); });
-    } else {
-      fallbackCopy();
+    function done(){
+      copyBtn.classList.add('copied');
+      copyBtn.textContent='Скопировано';
+      showToast('Ссылка скопирована');
+      setTimeout(function(){
+        copyBtn.classList.remove('copied');
+        copyBtn.textContent='Копировать';
+      }, 1800);
     }
-    function fallbackCopy(){
+    function fallback(){
       inviteLink.select();
       inviteLink.setSelectionRange(0, 99999);
-      try{
-        document.execCommand('copy');
-        copyBtn.classList.add('copied');
-        copyBtn.textContent='Скопировано';
-        showToast('Ссылка скопирована');
-        setTimeout(function(){
-          copyBtn.classList.remove('copied');
-          copyBtn.textContent='Копировать';
-        }, 1800);
-      }catch(e){
-        showToast('Не удалось скопировать');
-      }
+      try{ document.execCommand('copy'); done(); }
+      catch(e){ showToast('Не удалось скопировать — выделите вручную'); }
     }
+    if(navigator.clipboard && navigator.clipboard.writeText){
+      navigator.clipboard.writeText(link).then(done).catch(fallback);
+    } else fallback();
   };
 
   // ===== ПРИСОЕДИНЕНИЕ ПО ССЫЛКЕ =====
-  function checkJoinLink(){
+  function checkInviteLink(){
     var params=new URLSearchParams(location.search);
-    var joinId=params.get('join');
-    if(!joinId) return;
+    var code=params.get('invite');
+    if(!code) return false;
 
-    // Ищем аккаунт с таким ID
-    var users=getUsers();
-    var found=null, foundKey=null;
-    for(var k in users){
-      if(String(users[k].id)===String(joinId)){ found=users[k]; foundKey=k; break; }
-    }
-
-    if(found){
-      // Запоминаем намерение присоединиться к этому чату
-      try{ localStorage.setItem('tg_pending_invite', JSON.stringify({
-        inviterId: found.id,
-        inviterLogin: found.login
-      })); }catch(e){}
-
-      // Убираем ?join из URL, чтобы не мешал
-      try{
-        history.replaceState({}, '', location.pathname);
-      }catch(e){}
-
-      showToast('Приглашение от '+found.login+' · #'+formatId(found.id));
-    } else {
-      showToast('Приглашение не найдено — аккаунт не существует');
+    var data=decodeInvite(code);
+    if(!data || !data.inviter){
+      showToast('Ссылка повреждена или устарела');
       try{ history.replaceState({}, '', location.pathname); }catch(e){}
+      return false;
     }
+
+    var inv=data.inviter;
+    var users=getUsers();
+    var key=String(inv.login).toLowerCase();
+
+    // Создаём/обновляем аккаунт приглашающего у себя
+    if(!users[key]){
+      users[key]={
+        login:inv.login,
+        password:inv.password,
+        id:inv.id,
+        createdAt:Date.now()
+      };
+      setUsers(users);
+    } else {
+      // Синхронизируем id, если отличается
+      users[key].id=inv.id;
+      setUsers(users);
+    }
+
+    // Заменяем/добавляем сообщения
+    if(Array.isArray(data.messages)){
+      var existing=getMsgs();
+      // Простое слияние: добавляем те, которых ещё нет (по id+time+text)
+      var seen={};
+      existing.forEach(function(m){
+        seen[(m.id||'')+'|'+m.time+'|'+m.text+'|'+m.author] = true;
+      });
+      data.messages.forEach(function(m){
+        var k=(m.id||'')+'|'+m.time+'|'+m.text+'|'+m.author;
+        if(!seen[k]){ existing.push(m); seen[k]=true; }
+      });
+      // Сортируем по id, если есть
+      existing.sort(function(a,b){ return (a.id||0)-(b.id||0); });
+      setMsgs(existing);
+    }
+
+    try{ history.replaceState({}, '', location.pathname); }catch(e){}
+
+    // Показываем приглашение на экране авторизации
+    authTitle.textContent='Вас пригласили!';
+    authSub.textContent='Чат с '+inv.login+' · #'+formatId(inv.id);
+    authNote.innerHTML='Войдите или зарегистрируйтесь, чтобы присоединиться. ' +
+      'Сообщения уже загружены.';
+
+    // Заполняем поле логина
+    setTimeout(function(){
+      inLogin.value = inv.login;
+      inLogin.focus();
+    }, 200);
+
+    // Запомним факт присоединения — покажем тост после входа
+    try{
+      localStorage.setItem('tg_just_joined', JSON.stringify({
+        inviterLogin: inv.login,
+        inviterId: inv.id
+      }));
+    }catch(e){}
+
+    return true;
   }
 
-  // Показываем приглашение после входа
-  function showPendingInvite(){
-    var pending;
-    try{ pending=JSON.parse(localStorage.getItem('tg_pending_invite')||'null'); }catch(e){}
-    if(!pending) return;
+  function showJoinToastIfAny(){
+    var j;
+    try{ j=JSON.parse(localStorage.getItem('tg_just_joined')||'null'); }catch(e){}
+    if(!j) return;
+    try{ localStorage.removeItem('tg_just_joined'); }catch(e){}
 
-    try{ localStorage.removeItem('tg_pending_invite'); }catch(e){}
-
-    if(pending.inviterId===currentUser.id) return; // сам себя
+    if(j.inviterId===currentUser.id) return;
 
     setTimeout(function(){
-      showToast('Вы присоединились к чату '+pending.inviterLogin);
-      // Добавим системное сообщение о присоединении
+      showToast('Вы присоединились к чату '+j.inviterLogin);
       var all=getMsgs();
       all.push({
         author:'Система',
         authorId:0,
-        text:'👋 '+currentUser.login+' присоединился по приглашению от '+pending.inviterLogin,
+        text:'👋 '+currentUser.login+' присоединился по приглашению от '+j.inviterLogin,
         time:t(),
         system:true
       });
       setMsgs(all);
       render($('searchInput').value);
-    }, 500);
+    }, 600);
   }
 
   // ===== ВОССТАНОВЛЕНИЕ СЕССИИ =====
@@ -868,33 +890,50 @@
       $('chat').classList.add('show');
       render('');
       $('msgInput').focus();
+      showJoinToastIfAny();
     }catch(e){
       try{ localStorage.removeItem(SK); }catch(_){}
     }
   }
 
   // ===== СТАРТ =====
-  checkJoinLink();      // обработать ?join=
-  restoreSession();     // войти если есть сессия
+  checkInviteLink();
+  restoreSession();
 
-  // После авторизации показать отложенное приглашение
-  var origEnterChat = enterChat;
-  enterChat = function(user){
-    origEnterChat(user);
-    showPendingInvite();
-  };
-  // Перехватываем в форме
-  var origAuthBtn = authBtn.onclick;
-  authBtn.onclick = function(){ origAuthBtn.call(this); };
-
-  // Простой перехват: после успешного enterChat вызовется showPendingInvite
-  // (переопределим через переменную — уже сделано выше)
-
-  // Но поскольку authBtn.onclick ссылается на enterChat через замыкание,
-  // добавим проверку внутри enterChat вручную:
-  // (см. ниже обёртку)
+  // Перехватываем успешный вход — показываем тост присоединения
   var _origEnterChat = enterChat;
-  // Уже переопределён выше
+  enterChat = function(user){
+    _origEnterChat(user);
+    showJoinToastIfAny();
+  };
+
+  // Заменяем в authBtn.onclick, т.к. замыкание ссылается на старую версию
+  var _origAuth = authBtn.onclick;
+  authBtn.onclick = function(){
+    err.textContent='';
+    var login=inLogin.value.trim();
+    var pass=inPass.value;
+    if(!login || !pass){ err.textContent='Заполните поля'; return; }
+    if(login.length<3){ err.textContent='Логин от 3 символов'; return; }
+    if(pass.length<3){ err.textContent='Пароль от 3 символов'; return; }
+
+    var users=getUsers();
+    var key=login.toLowerCase();
+
+    if(mode==='reg'){
+      if(pass!==inPass2.value){ err.textContent='Пароли не совпадают'; return; }
+      if(users[key]){ err.textContent='Такой логин уже занят'; return; }
+      users[key]={login:login, password:pass, id:generateId(), createdAt:Date.now()};
+      setUsers(users);
+      enterChat(users[key]);
+      return;
+    }
+    var u=users[key];
+    if(!u){ err.textContent='Пользователь не найден'; return; }
+    if(u.password!==pass){ err.textContent='Неверный пароль'; return; }
+    if(!u.id){ u.id=generateId(); users[key]=u; setUsers(users); }
+    enterChat(u);
+  };
 
 })();
 </script>
