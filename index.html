@@ -148,7 +148,6 @@
             border-radius: 16px;
             border: 1px solid var(--border-color);
             box-shadow: 0 20px 50px rgba(0,0,0,0.5);
-            /* Заглушка вместо скриншота */
             background: linear-gradient(135deg, #1e2330, #12151e);
             height: 400px;
             display: flex;
@@ -254,15 +253,15 @@
                 <div class="badge">Версия 2.0 уже доступна</div>
                 <h1 class="hero-title">Ваш ритм.<br>Ваш контроль.</h1>
                 <p class="hero-subtitle">Локальный, быстрый и безопасный автокликер. Без установки, без API-ключей и скрытых процессов.</p>
-                <!-- ЗАМЕНИТЕ ССЫЛКУ НИЖЕ НА СВОЮ (например, на Google Drive или GitHub Releases) -->
-                <a href="#" class="btn-download" onclick="downloadPulse(event)">
+                
+                <!-- ЗДЕСЬ ВАША ССЫЛКА НА СКАЧИВАНИЕ -->
+                <a href="https://github.com/noob5cool/GGmey.yo/releases/download/Pulse/PulseSetup.exe" class="btn-download">
                     <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
                     Скачать Pulse для Windows
                 </a>
             </div>
             <div class="hero-image">
                 <div class="mockup">
-                    <!-- Сюда можно вставить тег <img src="ваш_скриншот.png" style="width:100%; border-radius:16px;"> -->
                     <p>Скриншот интерфейса Pulse 2.0</p>
                 </div>
             </div>
@@ -312,15 +311,5 @@
         </div>
     </footer>
 
-    <script>
-        function downloadPulse(event) {
-            event.preventDefault(); // Отменяем переход по ссылке-заглушке
-            
-            // ВНИМАНИЕ: Замените этот код на реальную ссылку в атрибуте href кнопки!
-            // Пример: <a href="https://drive.google.com/ваша-ссылка" class="btn-download">...
-            
-            alert("Ссылка на скачивание файла Pulse.exe будет добавлена сюда. Отредактируйте файл index.html и замените 'href=\"#\"' на прямую ссылку на ваш файл.");
-        }
-    </script>
 </body>
 </html>
