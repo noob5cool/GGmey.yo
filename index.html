@@ -1,941 +1,326 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Telegram-style чат</title>
-<style>
-  * { margin:0; padding:0; box-sizing:border-box;
-      font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif; }
-  html,body { height:100%; overflow:hidden; }
-  body {
-    background:#0e1621; min-height:100vh;
-    display:flex; align-items:center; justify-content:center;
-    padding:16px; color:#fff; -webkit-font-smoothing:antialiased;
-  }
-  .app {
-    width:100%; max-width:720px; height:88vh; min-height:560px;
-    background:#17212b; border-radius:14px;
-    box-shadow:0 20px 60px -10px rgba(0,0,0,.7), 0 0 0 1px rgba(255,255,255,.04);
-    display:flex; flex-direction:column; overflow:hidden; position:relative;
-    animation:appIn .4s cubic-bezier(.2,.9,.3,1.1);
-  }
-  @keyframes appIn { from{opacity:0;transform:translateY(14px) scale(.98);} to{opacity:1;transform:none;} }
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pulse 2.0 - Ультимативный автокликер</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-color: #12151e;
+            --panel-bg: #1e2330;
+            --accent-color: #3b82f6;
+            --accent-hover: #2563eb;
+            --text-main: #ffffff;
+            --text-muted: #94a3b8;
+            --border-color: #2e3648;
+        }
 
-  /* ===== АВТОРИЗАЦИЯ ===== */
-  #auth {
-    position:absolute; inset:0; z-index:10; background:#17212b;
-    padding:40px 30px; display:flex; flex-direction:column; justify-content:center;
-    gap:14px; transition:opacity .3s ease, transform .3s ease; overflow-y:auto;
-  }
-  #auth.hide { opacity:0; transform:scale(.96); pointer-events:none; }
-  #auth h1 {
-    text-align:center; font-size:1.6rem; margin-bottom:6px;
-    background:linear-gradient(135deg,#5eb5f7,#0088cc);
-    -webkit-background-clip:text; -webkit-text-fill-color:transparent;
-    background-clip:text; font-weight:700;
-  }
-  #auth .sub { text-align:center; color:#7d8e9e; font-size:.85rem; margin-top:-6px; margin-bottom:10px; }
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Inter', sans-serif;
+        }
 
-  .tabs {
-    display:flex; gap:4px; background:#0e1621; padding:4px;
-    border-radius:12px; position:relative; margin-bottom:6px;
-  }
-  .tabs .ind {
-    position:absolute; top:4px; left:4px; width:calc(50% - 4px); height:calc(100% - 8px);
-    background:#2b5278; border-radius:9px;
-    transition:transform .35s cubic-bezier(.4,.9,.3,1.1);
-  }
-  .tabs[data-mode="reg"] .ind { transform:translateX(calc(100% + 4px)); }
-  .tabs button {
-    flex:1; border:none; background:transparent; padding:11px;
-    border-radius:9px; cursor:pointer; font-weight:600; color:#7d8e9e;
-    font-size:.9rem; position:relative; z-index:1; transition:color .25s;
-  }
-  .tabs button.active { color:#fff; }
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            line-height: 1.6;
+            overflow-x: hidden;
+        }
 
-  .field {
-    border-radius:12px; overflow:hidden;
-    transition:height .3s ease, opacity .25s ease, margin .3s ease;
-    height:52px;
-  }
-  .field.collapsed { height:0; opacity:0; margin:0; pointer-events:none; }
+        /* Header */
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px 50px;
+            background-color: rgba(18, 21, 30, 0.9);
+            position: fixed;
+            width: 100%;
+            top: 0;
+            z-index: 100;
+            border-bottom: 1px solid var(--border-color);
+            backdrop-filter: blur(10px);
+        }
 
-  #auth input {
-    width:100%; height:52px; padding:0 16px;
-    border:1.5px solid #2b5278; border-radius:12px;
-    font-size:.95rem; outline:none; background:#0e1621; color:#fff; transition:.2s;
-  }
-  #auth input::placeholder { color:#5f7285; }
-  #auth input:focus { border-color:#5eb5f7; box-shadow:0 0 0 3px rgba(94,181,247,.15); }
+        .logo {
+            font-size: 24px;
+            font-weight: 800;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
 
-  #authBtn {
-    margin-top:6px; padding:14px; border:none; border-radius:12px;
-    background:linear-gradient(135deg,#5eb5f7,#0088cc); color:#fff;
-    font-weight:600; font-size:1rem; cursor:pointer; transition:.2s;
-    box-shadow:0 8px 20px -6px rgba(0,136,204,.5);
-  }
-  #authBtn:hover { filter:brightness(1.1); }
-  #authBtn:active { transform:scale(.98); }
+        .logo-icon {
+            background-color: var(--accent-color);
+            color: white;
+            width: 32px;
+            height: 32px;
+            border-radius: 8px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 18px;
+        }
 
-  #err { color:#ef5b5b; text-align:center; font-size:.85rem; min-height:18px; }
-  .note { font-size:.72rem; color:#5f7285; text-align:center; margin-top:4px; }
+        .logo span {
+            color: var(--accent-color);
+        }
 
-  /* ===== ЧАТ ===== */
-  #chat { display:none; flex-direction:column; flex:1; overflow:hidden; }
-  #chat.show { display:flex; animation:fade .35s ease; }
-  @keyframes fade { from{opacity:0;} to{opacity:1;} }
+        /* Main Container */
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
 
-  .head {
-    padding:10px 16px; background:#17212b;
-    border-bottom:1px solid rgba(255,255,255,.04);
-    display:flex; align-items:center; justify-content:space-between; gap:10px;
-    min-height:60px;
-  }
-  .who { display:flex; align-items:center; gap:12px; min-width:0; }
-  .ava {
-    width:42px; height:42px; border-radius:50%;
-    background:linear-gradient(135deg,#5eb5f7,#0088cc);
-    color:#fff; display:flex; align-items:center; justify-content:center;
-    font-weight:700; font-size:1rem; flex-shrink:0;
-    box-shadow:0 4px 12px -3px rgba(0,136,204,.6);
-    transition:transform .25s;
-  }
-  .ava:hover { transform:scale(1.06); }
-  .who .n { font-weight:600; color:#fff; font-size:1rem;
-            white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
-  .who .id { font-size:.72rem; color:#7d8e9e;
-             font-family:ui-monospace,'SF Mono',monospace; margin-top:1px; }
-  .who .id b { color:#5eb5f7; font-weight:700; }
+        /* Hero Section */
+        .hero {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            min-height: 100vh;
+            padding-top: 80px;
+            gap: 50px;
+        }
 
-  .acts { display:flex; gap:2px; }
-  .ico {
-    width:40px; height:40px; border:none; background:transparent; border-radius:50%;
-    cursor:pointer; font-size:1.15rem; color:#7d8e9e;
-    display:flex; align-items:center; justify-content:center; transition:.2s;
-  }
-  .ico:hover { background:rgba(94,181,247,.12); color:#5eb5f7; }
-  .ico:active { transform:scale(.9); }
-  .ico.del:hover { background:rgba(239,91,91,.12); color:#ef5b5b; }
-  .ico.on { background:#2b5278; color:#fff; }
+        .hero-content {
+            flex: 1;
+        }
 
-  #searchBar {
-    max-height:0; overflow:hidden; padding:0 16px; background:#17212b;
-    transition:max-height .35s cubic-bezier(.4,.9,.3,1.1), padding .35s;
-  }
-  #searchBar.open { max-height:96px; padding:8px 16px 10px; border-bottom:1px solid rgba(255,255,255,.04); }
-  #searchInput {
-    width:100%; padding:10px 16px; border:1.5px solid #2b5278; border-radius:24px;
-    font-size:.9rem; outline:none; background:#0e1621; color:#fff; transition:.2s;
-  }
-  #searchInput::placeholder { color:#5f7285; }
-  #searchInput:focus { border-color:#5eb5f7; }
-  #searchInfo { font-size:.72rem; color:#7d8e9e; text-align:center; min-height:14px; margin-top:5px; }
+        .hero-title {
+            font-size: 56px;
+            font-weight: 800;
+            line-height: 1.1;
+            margin-bottom: 20px;
+        }
 
-  #msgs {
-    flex:1; overflow-y:auto; padding:16px 14px;
-    display:flex; flex-direction:column; gap:6px; scroll-behavior:smooth;
-    background:
-      radial-gradient(circle at 25% 15%, rgba(94,181,247,.06) 0%, transparent 40%),
-      radial-gradient(circle at 80% 85%, rgba(43,82,120,.15) 0%, transparent 45%),
-      #0e1621;
-  }
-  #msgs::-webkit-scrollbar { width:5px; }
-  #msgs::-webkit-scrollbar-thumb { background:#2b5278; border-radius:20px; }
+        .hero-subtitle {
+            font-size: 20px;
+            color: var(--text-muted);
+            margin-bottom: 40px;
+        }
 
-  .msg {
-    max-width:78%; display:flex; flex-direction:column;
-    animation:min .3s cubic-bezier(.2,.9,.3,1.15); position:relative;
-  }
-  @keyframes min { from{opacity:0;transform:translateY(10px) scale(.97);} to{opacity:1;transform:none;} }
-  .msg.out { align-self:flex-end; }
-  .msg.in  { align-self:flex-start; }
+        .badge {
+            display: inline-block;
+            background-color: rgba(59, 130, 246, 0.2);
+            color: var(--accent-color);
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-size: 14px;
+            font-weight: 600;
+            margin-bottom: 20px;
+            border: 1px solid var(--accent-color);
+        }
 
-  .bub {
-    padding:8px 12px 6px; border-radius:14px; font-size:.94rem; line-height:1.35;
-    word-break:break-word; position:relative;
-    transition:box-shadow .25s; box-shadow:0 1px 2px rgba(0,0,0,.25);
-  }
-  .msg.in .bub { background:#182533; color:#e6edf3; border-bottom-left-radius:4px; }
-  .msg.out .bub { background:#2b5278; color:#fff; border-bottom-right-radius:4px; }
-  .msg.in .bub::after {
-    content:''; position:absolute; left:-6px; bottom:0;
-    width:12px; height:14px; background:#182533;
-    clip-path:polygon(100% 0, 100% 100%, 0 100%);
-  }
-  .msg.out .bub::after {
-    content:''; position:absolute; right:-6px; bottom:0;
-    width:12px; height:14px; background:#2b5278;
-    clip-path:polygon(0 0, 0 100%, 100% 100%);
-  }
-  .msg.same-author + .msg.same-author .bub::after { display:none; }
+        .btn-download {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            background-color: var(--accent-color);
+            color: white;
+            padding: 18px 40px;
+            border-radius: 12px;
+            font-size: 18px;
+            font-weight: 600;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(59, 130, 246, 0.4);
+            border: none;
+            cursor: pointer;
+        }
 
-  .msg .author-name {
-    font-size:.78rem; font-weight:600; color:#5eb5f7;
-    margin-bottom:2px; padding:0 4px;
-  }
-  .msg .author-name .badge {
-    background:rgba(94,181,247,.15); color:#5eb5f7;
-    padding:1px 6px; border-radius:5px; font-size:.68rem;
-    font-family:ui-monospace,monospace; margin-left:4px;
-  }
+        .btn-download:hover {
+            background-color: var(--accent-hover);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(59, 130, 246, 0.6);
+        }
 
-  .meta {
-    display:inline-flex; align-items:center; gap:5px;
-    font-size:.7rem; color:rgba(230,237,243,.55);
-    margin-left:8px; float:right; position:relative; top:3px; user-select:none;
-  }
-  .msg.out .meta { color:rgba(255,255,255,.65); }
-  .meta .checks { font-size:.75rem; color:#5eb5f7; letter-spacing:-2px; }
+        .hero-image {
+            flex: 1;
+            position: relative;
+        }
 
-  .msg.hl .bub { box-shadow:0 0 0 2px #fbbf24, 0 2px 8px rgba(251,191,36,.3); }
-  mark { background:rgba(251,191,36,.35); color:#ffd76e; border-radius:3px; padding:0 2px; }
+        .mockup {
+            width: 100%;
+            border-radius: 16px;
+            border: 1px solid var(--border-color);
+            box-shadow: 0 20px 50px rgba(0,0,0,0.5);
+            /* Заглушка вместо скриншота */
+            background: linear-gradient(135deg, #1e2330, #12151e);
+            height: 400px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: var(--text-muted);
+        }
 
-  .msg.system { align-self:center; max-width:90%; }
-  .msg.system .bub {
-    background:rgba(94,181,247,.1); color:#7d8e9e;
-    font-size:.78rem; text-align:center;
-    border-radius:14px; padding:6px 14px;
-  }
-  .msg.system .bub::after { display:none; }
+        /* Features Section */
+        .features {
+            padding: 100px 0;
+        }
 
-  .empty { text-align:center; color:#5f7285; font-size:.85rem; padding:40px 20px; line-height:1.6; }
-  .empty .big { font-size:2.4rem; display:block; margin-bottom:10px; opacity:.6; }
+        .section-title {
+            text-align: center;
+            font-size: 36px;
+            margin-bottom: 60px;
+        }
 
-  .foot {
-    padding:8px 12px; background:#17212b;
-    border-top:1px solid rgba(255,255,255,.04);
-    display:flex; gap:8px; align-items:center;
-  }
-  #msgInput {
-    flex:1; padding:12px 18px; border:none; border-radius:22px;
-    font-size:.94rem; outline:none; background:#0e1621; color:#fff;
-    transition:.2s; min-height:44px; font-family:inherit;
-  }
-  #msgInput::placeholder { color:#5f7285; }
-  #msgInput:focus { box-shadow:0 0 0 2px rgba(94,181,247,.3); }
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px;
+        }
 
-  #sendBtn {
-    width:46px; height:46px; border:none; border-radius:50%;
-    background:linear-gradient(135deg,#5eb5f7,#0088cc);
-    color:#fff; font-size:1.1rem; cursor:pointer; flex-shrink:0;
-    display:flex; align-items:center; justify-content:center; transition:.2s;
-    box-shadow:0 4px 14px -4px rgba(0,136,204,.6);
-  }
-  #sendBtn:hover { filter:brightness(1.1); transform:scale(1.05); }
-  #sendBtn:active { transform:scale(.92); }
+        .feature-card {
+            background-color: var(--panel-bg);
+            padding: 30px;
+            border-radius: 16px;
+            border: 1px solid var(--border-color);
+            transition: transform 0.3s ease;
+        }
 
-  /* ===== МОДАЛКА ===== */
-  .modal-bg {
-    position:absolute; inset:0; z-index:20; background:rgba(8,14,20,.75);
-    backdrop-filter:blur(6px);
-    display:flex; align-items:center; justify-content:center; padding:20px;
-    opacity:0; pointer-events:none; transition:opacity .25s ease;
-  }
-  .modal-bg.open { opacity:1; pointer-events:auto; }
-  .modal {
-    background:#17212b; border-radius:16px; padding:26px 24px;
-    width:100%; max-width:460px;
-    box-shadow:0 20px 60px rgba(0,0,0,.6), 0 0 0 1px rgba(255,255,255,.05);
-    transform:scale(.94) translateY(10px);
-    transition:transform .3s cubic-bezier(.2,.9,.3,1.15);
-  }
-  .modal-bg.open .modal { transform:scale(1) translateY(0); }
-  .modal h2 { font-size:1.15rem; color:#fff; margin-bottom:6px;
-              display:flex; align-items:center; gap:8px; }
-  .modal p { font-size:.82rem; color:#7d8e9e; margin-bottom:16px; line-height:1.5; }
+        .feature-card:hover {
+            transform: translateY(-5px);
+            border-color: var(--accent-color);
+        }
 
-  .link-box { display:flex; gap:8px; margin-bottom:14px; }
-  .link-box input {
-    flex:1; padding:12px 14px; border:1.5px solid #2b5278; border-radius:10px;
-    background:#0e1621; color:#5eb5f7; font-size:.75rem;
-    font-family:ui-monospace,'SF Mono',monospace; outline:none;
-    overflow:hidden; text-overflow:ellipsis; min-width:0;
-  }
-  .link-box input:focus { border-color:#5eb5f7; }
-  .copy-btn {
-    padding:0 16px; border:none; border-radius:10px;
-    background:#2b5278; color:#fff; font-weight:600;
-    cursor:pointer; font-size:.85rem; transition:.2s; white-space:nowrap;
-  }
-  .copy-btn:hover { background:#3a6a99; }
-  .copy-btn.copied { background:#4caf50; }
+        .feature-icon {
+            font-size: 30px;
+            margin-bottom: 20px;
+            background: rgba(59, 130, 246, 0.1);
+            width: 60px;
+            height: 60px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            border-radius: 12px;
+            color: var(--accent-color);
+        }
 
-  .modal-actions { display:flex; gap:10px; justify-content:flex-end; }
-  .btn-ghost {
-    padding:10px 18px; border:none; border-radius:10px;
-    background:transparent; color:#7d8e9e; font-weight:600;
-    cursor:pointer; font-size:.9rem; transition:.2s;
-  }
-  .btn-ghost:hover { background:rgba(255,255,255,.05); color:#fff; }
+        .feature-card h3 {
+            font-size: 20px;
+            margin-bottom: 15px;
+        }
 
-  .toast {
-    position:absolute; bottom:80px; left:50%;
-    transform:translateX(-50%) translateY(20px);
-    background:#2b5278; color:#fff; padding:10px 20px; border-radius:20px;
-    font-size:.85rem; font-weight:500;
-    box-shadow:0 8px 24px rgba(0,0,0,.4);
-    opacity:0; pointer-events:none;
-    transition:opacity .3s ease, transform .3s cubic-bezier(.2,.9,.3,1.15);
-    z-index:30; max-width:80%; text-align:center;
-  }
-  .toast.show { opacity:1; transform:translateX(-50%) translateY(0); }
-</style>
+        .feature-card p {
+            color: var(--text-muted);
+            font-size: 15px;
+        }
+
+        /* Footer */
+        footer {
+            border-top: 1px solid var(--border-color);
+            padding: 40px 0;
+            text-align: center;
+            color: var(--text-muted);
+        }
+
+        footer a {
+            color: var(--accent-color);
+            text-decoration: none;
+        }
+
+        /* Адаптивность */
+        @media (max-width: 768px) {
+            .hero {
+                flex-direction: column;
+                text-align: center;
+                padding-top: 120px;
+            }
+            .hero-title {
+                font-size: 40px;
+            }
+            header {
+                padding: 20px;
+            }
+        }
+    </style>
 </head>
 <body>
 
-<div class="app">
-
-  <div id="auth">
-    <h1 id="authTitle">Telegram-style Чат</h1>
-    <div class="sub" id="authSub">Регистрация · поиск · приглашения</div>
-
-    <div class="tabs" id="tabs" data-mode="login">
-      <div class="ind"></div>
-      <button class="active" data-m="login">Вход</button>
-      <button data-m="reg">Регистрация</button>
-    </div>
-
-    <input id="inLogin" placeholder="Логин" maxlength="20" autocomplete="off">
-    <input id="inPass" type="password" placeholder="Пароль" autocomplete="off">
-    <div class="field collapsed" id="confirmField">
-      <input id="inPass2" type="password" placeholder="Повторите пароль" autocomplete="off">
-    </div>
-
-    <button id="authBtn">Войти</button>
-    <div id="err"></div>
-    <div class="note" id="authNote">Каждому аккаунту выдаётся уникальный ID</div>
-  </div>
-
-  <div id="chat">
-    <div class="head">
-      <div class="who">
-        <div class="ava" id="ava">?</div>
-        <div style="min-width:0">
-          <div class="n" id="uName">—</div>
-          <div class="id" id="uId">ID: —</div>
+    <header>
+        <div class="logo">
+            <div class="logo-icon">P</div>
+            pulse <span>2.0</span>
         </div>
-      </div>
-      <div class="acts">
-        <button class="ico" id="inviteBtn" title="Пригласить">👥</button>
-        <button class="ico" id="searchBtn" title="Поиск">🔍</button>
-        <button class="ico del" id="clearBtn" title="Очистить">🗑️</button>
-        <button class="ico del" id="exitBtn" title="Выйти">⎋</button>
-      </div>
+    </header>
+
+    <div class="container">
+        <section class="hero">
+            <div class="hero-content">
+                <div class="badge">Версия 2.0 уже доступна</div>
+                <h1 class="hero-title">Ваш ритм.<br>Ваш контроль.</h1>
+                <p class="hero-subtitle">Локальный, быстрый и безопасный автокликер. Без установки, без API-ключей и скрытых процессов.</p>
+                <!-- ЗАМЕНИТЕ ССЫЛКУ НИЖЕ НА СВОЮ (например, на Google Drive или GitHub Releases) -->
+                <a href="#" class="btn-download" onclick="downloadPulse(event)">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
+                    Скачать Pulse для Windows
+                </a>
+            </div>
+            <div class="hero-image">
+                <div class="mockup">
+                    <!-- Сюда можно вставить тег <img src="ваш_скриншот.png" style="width:100%; border-radius:16px;"> -->
+                    <p>Скриншот интерфейса Pulse 2.0</p>
+                </div>
+            </div>
+        </section>
+
+        <section class="features">
+            <h2 class="section-title">Почему выбирают Pulse?</h2>
+            <div class="grid">
+                <div class="feature-card">
+                    <div class="feature-icon">⚙️</div>
+                    <h3>Гибкий ритм</h3>
+                    <p>Настраивайте интервал кликов (от 1 до 50+ в секунду), разброс и лимит кликов под ваши задачи.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">🎯</div>
+                    <h3>Точка и запуск</h3>
+                    <p>Кликайте по курсору или выбирайте конкретную точку на экране. Настройте задержку старта и таймер.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">⌨️</div>
+                    <h3>Горячие клавиши</h3>
+                    <p>Мгновенное управление: F6 — старт/стоп, F7 — запомнить позицию, F8 — экстренная остановка.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">🎨</div>
+                    <h3>Кастомизация</h3>
+                    <p>Меняйте цветовые темы (например, "Синий океан"), устанавливайте свои обои и включайте плавные анимации.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">🛡️</div>
+                    <h3>Полная безопасность</h3>
+                    <p>Работает абсолютно локально. Не требует установки, не отправляет данные и не использует API-ключи.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">🚀</div>
+                    <h3>Легкость</h3>
+                    <p>Минимальное потребление ресурсов процессора и оперативной памяти. Просто запустите и работайте.</p>
+                </div>
+            </div>
+        </section>
     </div>
 
-    <div id="searchBar">
-      <input id="searchInput" placeholder="Поиск по тексту, логину или ID...">
-      <div id="searchInfo"></div>
-    </div>
-
-    <div id="msgs"></div>
-
-    <div class="foot">
-      <input id="msgInput" placeholder="Написать сообщение..." autocomplete="off">
-      <button id="sendBtn">➤</button>
-    </div>
-  </div>
-
-  <div class="modal-bg" id="inviteModal">
-    <div class="modal">
-      <h2>🔗 Пригласить в чат</h2>
-      <p id="inviteDesc">Отправьте эту ссылку другу. Он откроет её — и чат со всеми сообщениями появится у него автоматически.</p>
-
-      <div class="link-box">
-        <input id="inviteLink" readonly>
-        <button class="copy-btn" id="copyBtn">Копировать</button>
-      </div>
-
-      <div class="modal-actions">
-        <button class="btn-ghost" id="closeModal">Закрыть</button>
-      </div>
-    </div>
-  </div>
-
-  <div class="toast" id="toast"></div>
-</div>
-
-<script>
-(function(){
-  'use strict';
-
-  var UK='tg_chat_users_v1', SK='tg_chat_session_v1', MK='tg_chat_msgs_v1';
-
-  function $(id){ return document.getElementById(id); }
-  function getUsers(){ try{return JSON.parse(localStorage.getItem(UK)||'{}');}catch(e){return{};} }
-  function setUsers(u){ try{localStorage.setItem(UK,JSON.stringify(u));}catch(e){} }
-  function getMsgs(){ try{return JSON.parse(localStorage.getItem(MK)||'[]');}catch(e){return[];} }
-  function setMsgs(m){ try{localStorage.setItem(MK,JSON.stringify(m));}catch(e){} }
-
-  function t(){
-    var d=new Date();
-    return ('0'+d.getHours()).slice(-2)+':'+('0'+d.getMinutes()).slice(-2);
-  }
-  function esc(s){
-    return String(s).replace(/[&<>"']/g,function(c){
-      return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c];
-    });
-  }
-  function escRe(s){ return s.replace(/[.*+?^${}()|[\]\\]/g,'\\$&'); }
-
-  function generateId(){
-    var users=getUsers(); var used={};
-    for(var k in users){ if(users[k].id) used[users[k].id]=true; }
-    for(var i=0;i<300;i++){
-      var id=Math.floor(100000000 + Math.random()*900000000);
-      if(!used[id]) return id;
-    }
-    return Date.now();
-  }
-  function formatId(id){
-    return String(id).replace(/\B(?=(\d{3})+(?!\d))/g,' ');
-  }
-
-  var toastTimer;
-  function showToast(text){
-    var t=$('toast');
-    t.textContent=text;
-    t.classList.add('show');
-    clearTimeout(toastTimer);
-    toastTimer=setTimeout(function(){ t.classList.remove('show'); }, 2600);
-  }
-
-  // ===== КОДИРОВАНИЕ/ДЕКОДИРОВАНИЕ ПРИГЛАШЕНИЯ =====
-  // В ссылке передаём JSON с логином, паролем, id и сообщениями
-  function encodeInvite(data){
-    try{
-      var json = JSON.stringify(data);
-      // UTF-8 → base64 безопасный для URL
-      var utf8 = unescape(encodeURIComponent(json));
-      var b64 = btoa(utf8);
-      return b64.replace(/\+/g,'-').replace(/\//g,'_').replace(/=+$/,'');
-    }catch(e){ return ''; }
-  }
-  function decodeInvite(str){
-    try{
-      var b64 = str.replace(/-/g,'+').replace(/_/g,'/');
-      while(b64.length % 4) b64 += '=';
-      var utf8 = atob(b64);
-      var json = decodeURIComponent(escape(utf8));
-      return JSON.parse(json);
-    }catch(e){ return null; }
-  }
-
-  // ===== АВТОРИЗАЦИЯ =====
-  var mode='login';
-  var tabs=$('tabs');
-  var inLogin=$('inLogin'), inPass=$('inPass'), inPass2=$('inPass2');
-  var confirmField=$('confirmField');
-  var authBtn=$('authBtn'), err=$('err');
-  var authTitle=$('authTitle'), authSub=$('authSub'), authNote=$('authNote');
-
-  tabs.querySelectorAll('button').forEach(function(b){
-    b.onclick=function(){
-      mode=b.dataset.m;
-      tabs.dataset.mode=mode;
-      tabs.querySelectorAll('button').forEach(function(x){ x.classList.toggle('active', x===b); });
-      if(mode==='reg'){
-        confirmField.classList.remove('collapsed');
-        authBtn.textContent='Зарегистрироваться';
-      } else {
-        confirmField.classList.add('collapsed');
-        authBtn.textContent='Войти';
-      }
-      err.textContent='';
-      inLogin.focus();
-    };
-  });
-
-  authBtn.onclick=function(){
-    err.textContent='';
-    var login=inLogin.value.trim();
-    var pass=inPass.value;
-
-    if(!login || !pass){ err.textContent='Заполните поля'; return; }
-    if(login.length<3){ err.textContent='Логин от 3 символов'; return; }
-    if(pass.length<3){ err.textContent='Пароль от 3 символов'; return; }
-
-    var users=getUsers();
-    var key=login.toLowerCase();
-
-    if(mode==='reg'){
-      if(pass!==inPass2.value){ err.textContent='Пароли не совпадают'; return; }
-      if(users[key]){ err.textContent='Такой логин уже занят'; return; }
-
-      users[key]={
-        login:login, password:pass,
-        id:generateId(), createdAt:Date.now()
-      };
-      setUsers(users);
-      enterChat(users[key]);
-      return;
-    }
-
-    var u=users[key];
-    if(!u){ err.textContent='Пользователь не найден'; return; }
-    if(u.password!==pass){ err.textContent='Неверный пароль'; return; }
-    if(!u.id){ u.id=generateId(); users[key]=u; setUsers(users); }
-    enterChat(u);
-  };
-
-  [inLogin,inPass,inPass2].forEach(function(el){
-    el.addEventListener('keydown',function(e){
-      if(e.key==='Enter'){ e.preventDefault(); authBtn.click(); }
-    });
-  });
-
-  // ===== ВХОД =====
-  var currentUser=null;
-
-  function enterChat(user){
-    currentUser=user;
-    try{ localStorage.setItem(SK, JSON.stringify({login:user.login})); }catch(e){}
-
-    $('uName').textContent=user.login;
-    $('uId').innerHTML='ID: <b>'+formatId(user.id)+'</b>';
-    $('ava').textContent=user.login.charAt(0).toUpperCase();
-
-    $('auth').classList.add('hide');
-    setTimeout(function(){
-      $('auth').style.display='none';
-      $('chat').classList.add('show');
-      render('');
-      $('msgInput').focus();
-    },280);
-  }
-
-  // ===== ВЫХОД =====
-  $('exitBtn').onclick=function(){
-    try{ localStorage.removeItem(SK); }catch(e){}
-    currentUser=null;
-    $('chat').classList.remove('show');
-    $('auth').style.display='flex';
-    requestAnimationFrame(function(){ $('auth').classList.remove('hide'); });
-    inLogin.value=''; inPass.value=''; inPass2.value='';
-    err.textContent=''; mode='login';
-    tabs.dataset.mode='login';
-    tabs.querySelectorAll('button').forEach(function(x){
-      x.classList.toggle('active', x.dataset.m==='login');
-    });
-    confirmField.classList.add('collapsed');
-    authBtn.textContent='Войти';
-    inLogin.focus();
-  };
-
-  // ===== ОТРИСОВКА =====
-  var msgsEl=$('msgs'), searchInfo=$('searchInfo');
-
-  function buildEl(m, q, prevAuthor){
-    var own = currentUser && m.author===currentUser.login;
-    var div=document.createElement('div');
-    div.className='msg '+(own?'out':'in');
-
-    if(m.system){ div.className='msg system'; }
-
-    if(!own && !m.system && prevAuthor===m.author) div.classList.add('same-author');
-
-    var idStr=m.authorId?formatId(m.authorId):'';
-    var textLow=(m.text||'').toLowerCase();
-    var authorLow=(m.author||'').toLowerCase();
-    var idLow=String(m.authorId||'').toLowerCase();
-
-    if(q && !m.system){
-      var hit=textLow.indexOf(q)>-1 || authorLow.indexOf(q)>-1 ||
-              idLow.indexOf(q.replace(/\s/g,''))>-1 ||
-              idStr.toLowerCase().indexOf(q)>-1;
-      if(hit) div.classList.add('hl');
-    }
-
-    if(!own && !m.system){
-      var name=document.createElement('div');
-      name.className='author-name';
-      name.textContent = m.author || 'Гость';
-      if(idStr){
-        var badge=document.createElement('span');
-        badge.className='badge';
-        badge.textContent='#'+idStr;
-        name.appendChild(badge);
-      }
-      div.appendChild(name);
-    }
-
-    var bub=document.createElement('div');
-    bub.className='bub';
-
-    if(q && !m.system && textLow.indexOf(q)>-1){
-      var re=new RegExp('('+escRe(q)+')','gi');
-      bub.innerHTML=esc(m.text).replace(re,'<mark>$1</mark>');
-    } else {
-      bub.textContent=m.text;
-    }
-
-    if(!m.system){
-      var meta=document.createElement('span');
-      meta.className='meta';
-      var tm=document.createElement('span');
-      tm.textContent=m.time;
-      meta.appendChild(tm);
-      if(own){
-        var checks=document.createElement('span');
-        checks.className='checks';
-        checks.textContent='✓✓';
-        meta.appendChild(checks);
-      }
-      bub.appendChild(meta);
-    }
-
-    div.appendChild(bub);
-    return div;
-  }
-
-  function render(qRaw){
-    var q=(qRaw||'').trim().toLowerCase();
-    var qNoSpace=q.replace(/\s/g,'');
-    var all=getMsgs();
-
-    var list = q ? all.filter(function(m){
-      var t=(m.text||'').toLowerCase();
-      var a=(m.author||'').toLowerCase();
-      var id=String(m.authorId||'');
-      var idSp=formatId(m.authorId||'').toLowerCase();
-      return t.indexOf(q)>-1 || a.indexOf(q)>-1 ||
-             id.indexOf(qNoSpace)>-1 || idSp.indexOf(q)>-1;
-    }) : all;
-
-    var frag=document.createDocumentFragment();
-
-    if(!list.length){
-      var emp=document.createElement('div');
-      emp.className='empty';
-      if(q){
-        emp.innerHTML='<span class="big">🔍</span>Ничего не найдено<br>по запросу «'+esc(qRaw)+'»';
-      } else {
-        emp.innerHTML='<span class="big">💬</span>Здесь пока пусто<br>Напишите первое сообщение';
-      }
-      frag.appendChild(emp);
-    } else {
-      var prev=null;
-      list.forEach(function(m){
-        frag.appendChild(buildEl(m,q,prev));
-        prev=m.author;
-      });
-    }
-
-    msgsEl.innerHTML='';
-    msgsEl.appendChild(frag);
-
-    searchInfo.textContent = q ? ('Найдено: '+list.length+' из '+all.length) : '';
-    if(!q) msgsEl.scrollTop=msgsEl.scrollHeight;
-  }
-
-  // ===== ОТПРАВКА =====
-  function send(){
-    var text=$('msgInput').value.trim();
-    if(!text || !currentUser) return;
-
-    var all=getMsgs();
-    all.push({
-      author:currentUser.login,
-      authorId:currentUser.id,
-      text:text,
-      time:t()
-    });
-    setMsgs(all);
-
-    $('msgInput').value='';
-    $('msgInput').focus();
-
-    if($('searchBar').classList.contains('open') && $('searchInput').value){
-      $('searchInput').value='';
-      render('');
-      return;
-    }
-
-    var q=$('searchInput').value.trim();
-    if(q){ render(q); }
-    else {
-      var emp=msgsEl.querySelector('.empty');
-      if(emp){ render(''); }
-      else {
-        var last=all[all.length-1];
-        var prev=all.length>=2 ? all[all.length-2].author : null;
-        msgsEl.appendChild(buildEl(last,'',prev));
-        requestAnimationFrame(function(){
-          msgsEl.scrollTo({top:msgsEl.scrollHeight, behavior:'smooth'});
-        });
-      }
-    }
-  }
-
-  $('sendBtn').onclick=send;
-  $('msgInput').addEventListener('keydown',function(e){
-    if(e.key==='Enter' && !e.shiftKey){ e.preventDefault(); send(); }
-  });
-
-  // ===== ОЧИСТКА =====
-  $('clearBtn').onclick=function(){
-    if(confirm('Очистить всю историю сообщений?')){
-      setMsgs([]);
-      render($('searchInput').value);
-    }
-  };
-
-  // ===== ПОИСК =====
-  var searchBtn=$('searchBtn'), searchBar=$('searchBar'), searchInput=$('searchInput');
-  searchBtn.onclick=function(){
-    var open=searchBar.classList.toggle('open');
-    searchBtn.classList.toggle('on', open);
-    if(open) setTimeout(function(){ searchInput.focus(); },200);
-    else { searchInput.value=''; render(''); }
-  };
-  var tmr;
-  searchInput.addEventListener('input',function(){
-    clearTimeout(tmr);
-    tmr=setTimeout(function(){ render(searchInput.value); },120);
-  });
-
-  // ===== ПРИГЛАШЕНИЕ (генерация ссылки) =====
-  var inviteModal=$('inviteModal'), inviteLink=$('inviteLink'), copyBtn=$('copyBtn');
-
-  $('inviteBtn').onclick=function(){
-    if(!currentUser) return;
-
-    // Собираем всё, что нужно другу:
-    // 1) аккаунт приглашающего (логин, пароль, id)
-    // 2) все сообщения чата
-    var payload = {
-      inviter: {
-        login: currentUser.login,
-        password: currentUser.password,
-        id: currentUser.id
-      },
-      messages: getMsgs(),
-      invitedAt: Date.now()
-    };
-
-    var code = encodeInvite(payload);
-    if(!code){
-      showToast('Не удалось создать ссылку');
-      return;
-    }
-
-    var base = location.origin + location.pathname;
-    base = base.split('?')[0].split('#')[0];
-
-    // Если origin = 'null' (file://), используем просто путь
-    if(location.protocol === 'file:'){
-      var link = base + '?invite=' + code;
-      inviteLink.value = link;
-      $('inviteDesc').innerHTML =
-        '⚠️ Файл открыт локально. Ссылка будет работать только на этом компьютере. ' +
-        'Для работы между устройствами нужен хостинг (GitHub Pages, Netlify и т.п.).';
-    } else {
-      inviteLink.value = base + '?invite=' + code;
-      $('inviteDesc').textContent =
-        'Отправьте эту ссылку другу. Он откроет её — и чат со всеми сообщениями появится у него автоматически.';
-    }
-
-    inviteModal.classList.add('open');
-    setTimeout(function(){ inviteLink.select(); }, 250);
-  };
-
-  $('closeModal').onclick=function(){ inviteModal.classList.remove('open'); };
-  inviteModal.onclick=function(e){
-    if(e.target===inviteModal) inviteModal.classList.remove('open');
-  };
-
-  copyBtn.onclick=function(){
-    var link=inviteLink.value;
-    function done(){
-      copyBtn.classList.add('copied');
-      copyBtn.textContent='Скопировано';
-      showToast('Ссылка скопирована');
-      setTimeout(function(){
-        copyBtn.classList.remove('copied');
-        copyBtn.textContent='Копировать';
-      }, 1800);
-    }
-    function fallback(){
-      inviteLink.select();
-      inviteLink.setSelectionRange(0, 99999);
-      try{ document.execCommand('copy'); done(); }
-      catch(e){ showToast('Не удалось скопировать — выделите вручную'); }
-    }
-    if(navigator.clipboard && navigator.clipboard.writeText){
-      navigator.clipboard.writeText(link).then(done).catch(fallback);
-    } else fallback();
-  };
-
-  // ===== ПРИСОЕДИНЕНИЕ ПО ССЫЛКЕ =====
-  function checkInviteLink(){
-    var params=new URLSearchParams(location.search);
-    var code=params.get('invite');
-    if(!code) return false;
-
-    var data=decodeInvite(code);
-    if(!data || !data.inviter){
-      showToast('Ссылка повреждена или устарела');
-      try{ history.replaceState({}, '', location.pathname); }catch(e){}
-      return false;
-    }
-
-    var inv=data.inviter;
-    var users=getUsers();
-    var key=String(inv.login).toLowerCase();
-
-    // Создаём/обновляем аккаунт приглашающего у себя
-    if(!users[key]){
-      users[key]={
-        login:inv.login,
-        password:inv.password,
-        id:inv.id,
-        createdAt:Date.now()
-      };
-      setUsers(users);
-    } else {
-      // Синхронизируем id, если отличается
-      users[key].id=inv.id;
-      setUsers(users);
-    }
-
-    // Заменяем/добавляем сообщения
-    if(Array.isArray(data.messages)){
-      var existing=getMsgs();
-      // Простое слияние: добавляем те, которых ещё нет (по id+time+text)
-      var seen={};
-      existing.forEach(function(m){
-        seen[(m.id||'')+'|'+m.time+'|'+m.text+'|'+m.author] = true;
-      });
-      data.messages.forEach(function(m){
-        var k=(m.id||'')+'|'+m.time+'|'+m.text+'|'+m.author;
-        if(!seen[k]){ existing.push(m); seen[k]=true; }
-      });
-      // Сортируем по id, если есть
-      existing.sort(function(a,b){ return (a.id||0)-(b.id||0); });
-      setMsgs(existing);
-    }
-
-    try{ history.replaceState({}, '', location.pathname); }catch(e){}
-
-    // Показываем приглашение на экране авторизации
-    authTitle.textContent='Вас пригласили!';
-    authSub.textContent='Чат с '+inv.login+' · #'+formatId(inv.id);
-    authNote.innerHTML='Войдите или зарегистрируйтесь, чтобы присоединиться. ' +
-      'Сообщения уже загружены.';
-
-    // Заполняем поле логина
-    setTimeout(function(){
-      inLogin.value = inv.login;
-      inLogin.focus();
-    }, 200);
-
-    // Запомним факт присоединения — покажем тост после входа
-    try{
-      localStorage.setItem('tg_just_joined', JSON.stringify({
-        inviterLogin: inv.login,
-        inviterId: inv.id
-      }));
-    }catch(e){}
-
-    return true;
-  }
-
-  function showJoinToastIfAny(){
-    var j;
-    try{ j=JSON.parse(localStorage.getItem('tg_just_joined')||'null'); }catch(e){}
-    if(!j) return;
-    try{ localStorage.removeItem('tg_just_joined'); }catch(e){}
-
-    if(j.inviterId===currentUser.id) return;
-
-    setTimeout(function(){
-      showToast('Вы присоединились к чату '+j.inviterLogin);
-      var all=getMsgs();
-      all.push({
-        author:'Система',
-        authorId:0,
-        text:'👋 '+currentUser.login+' присоединился по приглашению от '+j.inviterLogin,
-        time:t(),
-        system:true
-      });
-      setMsgs(all);
-      render($('searchInput').value);
-    }, 600);
-  }
-
-  // ===== ВОССТАНОВЛЕНИЕ СЕССИИ =====
-  function restoreSession(){
-    var s;
-    try{ s=localStorage.getItem(SK); }catch(e){ return; }
-    if(!s) return;
-
-    try{
-      var data=JSON.parse(s);
-      var u=getUsers()[data.login.toLowerCase()];
-      if(!u){ localStorage.removeItem(SK); return; }
-      if(!u.id){
-        u.id=generateId();
-        var all=getUsers();
-        all[data.login.toLowerCase()]=u;
-        setUsers(all);
-      }
-
-      currentUser=u;
-      $('uName').textContent=u.login;
-      $('uId').innerHTML='ID: <b>'+formatId(u.id)+'</b>';
-      $('ava').textContent=u.login.charAt(0).toUpperCase();
-
-      $('auth').style.display='none';
-      $('chat').classList.add('show');
-      render('');
-      $('msgInput').focus();
-      showJoinToastIfAny();
-    }catch(e){
-      try{ localStorage.removeItem(SK); }catch(_){}
-    }
-  }
-
-  // ===== СТАРТ =====
-  checkInviteLink();
-  restoreSession();
-
-  // Перехватываем успешный вход — показываем тост присоединения
-  var _origEnterChat = enterChat;
-  enterChat = function(user){
-    _origEnterChat(user);
-    showJoinToastIfAny();
-  };
-
-  // Заменяем в authBtn.onclick, т.к. замыкание ссылается на старую версию
-  var _origAuth = authBtn.onclick;
-  authBtn.onclick = function(){
-    err.textContent='';
-    var login=inLogin.value.trim();
-    var pass=inPass.value;
-    if(!login || !pass){ err.textContent='Заполните поля'; return; }
-    if(login.length<3){ err.textContent='Логин от 3 символов'; return; }
-    if(pass.length<3){ err.textContent='Пароль от 3 символов'; return; }
-
-    var users=getUsers();
-    var key=login.toLowerCase();
-
-    if(mode==='reg'){
-      if(pass!==inPass2.value){ err.textContent='Пароли не совпадают'; return; }
-      if(users[key]){ err.textContent='Такой логин уже занят'; return; }
-      users[key]={login:login, password:pass, id:generateId(), createdAt:Date.now()};
-      setUsers(users);
-      enterChat(users[key]);
-      return;
-    }
-    var u=users[key];
-    if(!u){ err.textContent='Пользователь не найден'; return; }
-    if(u.password!==pass){ err.textContent='Неверный пароль'; return; }
-    if(!u.id){ u.id=generateId(); users[key]=u; setUsers(users); }
-    enterChat(u);
-  };
-
-})();
-</script>
+    <footer>
+        <div class="container">
+            <p>© 2024 Pulse Auto Clicker. Автор: <a href="#">noob5</a>.</p>
+            <p style="font-size: 12px; margin-top: 10px; opacity: 0.6;">Программа предоставляется "как есть". Используйте на свой страх и риск в соответствии с правилами игр/сервисов.</p>
+        </div>
+    </footer>
+
+    <script>
+        function downloadPulse(event) {
+            event.preventDefault(); // Отменяем переход по ссылке-заглушке
+            
+            // ВНИМАНИЕ: Замените этот код на реальную ссылку в атрибуте href кнопки!
+            // Пример: <a href="https://drive.google.com/ваша-ссылка" class="btn-download">...
+            
+            alert("Ссылка на скачивание файла Pulse.exe будет добавлена сюда. Отредактируйте файл index.html и замените 'href=\"#\"' на прямую ссылку на ваш файл.");
+        }
+    </script>
 </body>
 </html>
